@@ -1,8 +1,8 @@
 CREATE TABLE book(
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(255) NOT NULL,
-    price DECIMAL(10,2) NOT NULL,
-    status VARCHAR(255) NOT NULL,
-    customer_id INT NOT NULL,
-    FOREIGN KEY(customer_id) REFERENCES customer(id)
-)
+	id int auto_increment primary key,
+    name varchar(255) not null,
+    price decimal(10,2) not null,
+    status varchar(255) not null,
+    customer_id int not null,
+    FOREIGN KEY (customer_id) REFERENCES customer(id)
+);

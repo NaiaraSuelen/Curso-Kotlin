@@ -1,6 +1,6 @@
 package com.mercadolivro.controller.response
 
-import com.mercadolivro.Enum.BookStatus
+import com.mercadolivro.enums.BookStatus
 import com.mercadolivro.model.CustomerModel
 import java.math.BigDecimal
 
@@ -14,5 +14,4 @@ data class BookResponse(
     var customer: CustomerModel? = null,
 
     var status: BookStatus? = null
-
 )

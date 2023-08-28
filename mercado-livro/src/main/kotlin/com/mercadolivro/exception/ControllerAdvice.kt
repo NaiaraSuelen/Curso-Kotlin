@@ -1,10 +1,11 @@
 package com.mercadolivro.exception
 
-import com.mercadolivro.Enum.Erros
 import com.mercadolivro.controller.response.ErrorResponse
 import com.mercadolivro.controller.response.FieldErrorResponse
+import com.mercadolivro.enums.Errors
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -26,9 +27,9 @@ class ControllerAdvice {
     }
 
     @ExceptionHandler(BadRequestException::class)
-    fun handlerBadRequestException(ex: BadRequestException, request: WebRequest): ResponseEntity<ErrorResponse> {
+    fun handleBadRequestException(ex: BadRequestException, request: WebRequest): ResponseEntity<ErrorResponse> {
         val erro = ErrorResponse(
-            HttpStatus.NOT_FOUND.value(),
+            HttpStatus.BAD_REQUEST.value(),
             ex.message,
             ex.errorCode,
             null
@@ -38,14 +39,26 @@ class ControllerAdvice {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
-    fun handlerMethodArgumentNotValidException(ex: MethodArgumentNotValidException, request: WebRequest): ResponseEntity<ErrorResponse> {
+    fun handleMethodArgumentNotValidException(ex: MethodArgumentNotValidException, request: WebRequest): ResponseEntity<ErrorResponse> {
         val erro = ErrorResponse(
             HttpStatus.UNPROCESSABLE_ENTITY.value(),
-            Erros.ML101.message,
-            Erros.ML101.code,
+            Errors.ML001.message,
+            Errors.ML001.code,
             ex.bindingResult.fieldErrors.map { FieldErrorResponse(it.defaultMessage ?: "invalid", it.field) }
         )
 
         return ResponseEntity(erro, HttpStatus.UNPROCESSABLE_ENTITY)
+    }
+
+    @ExceptionHandler(AccessDeniedException::class)
+    fun handleAccessDeniedException(ex: AccessDeniedException, request: WebRequest): ResponseEntity<ErrorResponse> {
+        val erro = ErrorResponse(
+            HttpStatus.FORBIDDEN.value(),
+            Errors.ML000.message,
+            Errors.ML000.code,
+            null
+        )
+
+        return ResponseEntity(erro, HttpStatus.FORBIDDEN)
     }
 }

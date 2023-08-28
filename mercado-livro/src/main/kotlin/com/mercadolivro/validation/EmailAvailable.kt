@@ -1,10 +1,10 @@
 package com.mercadolivro.validation
 
-import jakarta.validation.Constraint
-import jakarta.validation.Payload
+import javax.validation.Constraint
+import javax.validation.Payload
 import kotlin.reflect.KClass
 
-@Constraint(validatedBy = [EmailAvailableValidation::class])
+@Constraint(validatedBy = [EmailAvailableValidator::class])
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.FIELD)
 annotation class EmailAvailable(

@@ -1,15 +1,10 @@
 package com.mercadolivro.repository
 
 import com.mercadolivro.model.CustomerModel
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
-import org.springframework.data.jpa.repository.JpaRepository
-import org.springframework.stereotype.Repository
+import org.springframework.data.repository.CrudRepository
 
-@Repository
-interface CustomerRepository : JpaRepository<CustomerModel, Int> {
-    fun findByNameContaining(name: String, pageable: Pageable): Page<CustomerModel>
+interface CustomerRepository : CrudRepository<CustomerModel, Int> {
+    fun findByNameContaining(name: String): List<CustomerModel>
     fun existsByEmail(email: String): Boolean
     fun findByEmail(email: String): CustomerModel?
-
 }

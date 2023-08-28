@@ -1,66 +1,59 @@
 package com.mercadolivro.service
 
-import com.mercadolivro.Enum.CustomerStatus
-import com.mercadolivro.Enum.Erros
-import com.mercadolivro.Enum.Profile
+import com.mercadolivro.enums.CustomerStatus
+import com.mercadolivro.enums.Errors
+import com.mercadolivro.enums.Role
 import com.mercadolivro.exception.NotFoundException
-import com.mercadolivro.repository.CustomerRepository
 import com.mercadolivro.model.CustomerModel
-import jakarta.persistence.EntityNotFoundException
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
-import org.springframework.stereotype.Service
+import com.mercadolivro.repository.CustomerRepository
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.stereotype.Service
 
 @Service
-class CustomerService (
-    @Autowired
+class CustomerService(
     private val customerRepository: CustomerRepository,
-    private val bookService : BookService,
+    private val bookService: BookService,
     private val bCrypt: BCryptPasswordEncoder
-){
-    fun getAll(name: String?, pageable: Pageable): Page<CustomerModel> {
-        return if (!name.isNullOrEmpty()) {
-            customerRepository.findByNameContaining(name, pageable)
-        } else {
-            customerRepository.findAll(pageable)
+) {
+
+    fun getAll(name: String?): List<CustomerModel> {
+        name?.let {
+            return customerRepository.findByNameContaining(it)
         }
+        return customerRepository.findAll().toList()
     }
 
-    fun getById(id: Int): CustomerModel {
-        return customerRepository.findById(id).orElseThrow { NotFoundException(Erros.ML201.message.format(id), Erros.ML201.code) }
-    }
-
-    fun saveCustomer(customer: CustomerModel){
+    fun create(customer: CustomerModel) {
         val customerCopy = customer.copy(
-            roles = setOf(Profile.CUSTOMER),
+            roles = setOf(Role.CUSTOMER),
             password = bCrypt.encode(customer.password)
         )
         customerRepository.save(customerCopy)
     }
 
-    fun deleteCustomer(id: Int){
-        val customer = getById(id)
+    fun findById(id: Int): CustomerModel {
+        return customerRepository.findById(id).orElseThrow{ NotFoundException(Errors.ML201.message.format(id), Errors.ML201.code) }
+    }
+
+    fun update(customer: CustomerModel) {
+        if(!customerRepository.existsById(customer.id!!)){
+            throw NotFoundException(Errors.ML201.message.format(customer.id), Errors.ML201.code)
+        }
+
+        customerRepository.save(customer)
+    }
+
+    fun delete(id: Int) {
+        val customer = findById(id)
         bookService.deleteByCustomer(customer)
 
         customer.status = CustomerStatus.INATIVO
 
-        customerRepository.deleteById(id)
         customerRepository.save(customer)
     }
 
-    fun updateCustomer(id: Int, customer: CustomerModel){
-        val newCustomer = customerRepository.findById(id).orElseThrow { EntityNotFoundException("Customer não encontrado para o ID: $id") }
-
-        newCustomer.name = customer.name
-
-        newCustomer.email = customer.email
-
-        customerRepository.save(newCustomer)
-    }
-
     fun emailAvailable(email: String): Boolean {
-       return !customerRepository.existsByEmail(email)
+        return !customerRepository.existsByEmail(email)
     }
+
 }

@@ -1,19 +1,12 @@
 package com.mercadolivro.model
 
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
-import jakarta.persistence.JoinColumn
-import jakarta.persistence.JoinTable
-import jakarta.persistence.ManyToMany
-import jakarta.persistence.ManyToOne
 import java.math.BigDecimal
 import java.time.LocalDateTime
+import javax.persistence.*
 
 @Entity(name = "purchase")
 data class PurchaseModel(
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int? = null,
@@ -34,6 +27,6 @@ data class PurchaseModel(
     @Column
     val price: BigDecimal,
 
-    @Column(name = "create_at")
+    @Column(name = "created_at")
     val createdAt: LocalDateTime = LocalDateTime.now()
 )

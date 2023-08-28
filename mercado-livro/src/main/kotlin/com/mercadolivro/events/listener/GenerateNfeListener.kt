@@ -8,15 +8,17 @@ import org.springframework.stereotype.Component
 import java.util.*
 
 @Component
-class GenerateNfeListener (
+class GenerateNfeListener(
     private val purchaseService: PurchaseService
-){
+) {
 
     @Async
     @EventListener
-    fun listen(purchaseEvent: PurchaseEvent){
+    fun listen(purchaseEvent: PurchaseEvent) {
+        println("Gerando NFE")
         val nfe = UUID.randomUUID().toString()
         val purchaseModel = purchaseEvent.purchaseModel.copy(nfe = nfe)
         purchaseService.update(purchaseModel)
     }
+
 }
